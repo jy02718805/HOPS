@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.0.xsd"
+	default-lazy-init="true">
+	
+	<description>transaction config file</description>
+
+	<import resource="classpath:quartz/applicationContext-quartz-timer-cluster.xml" />
+
+	<bean id="entityManagerFactoryScanList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+			    <value>com.yuecheng.hops.injection.entity</value>
+            	<value>com.yuecheng.hops.report.entity</value>
+                <value>com.yuecheng.hops.rebate.entity</value>
+                <value>com.yuecheng.hops.batch.entity</value>
+                <value>com.yuecheng.hops.transaction.config.entify</value>
+                <value>com.yuecheng.hops.transaction.basic.entity</value>
+            </list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="publisher" class="com.yuecheng.hops.common.event.HopsPublisher" />
+	
+	<bean id="transactionService" class="com.yuecheng.hops.transaction.TransactionServiceProxy" />
+	
+	<aop:aspectj-autoproxy />
+	
+	<!-- JMS 配置 -->
+	<bean id="targetConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+	    <property name="brokerURL" value="${mq.brokerURL}" />
+	</bean>
+	  
+	<bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">  
+	    <property name="connectionFactory" ref="targetConnectionFactory"/>  
+	</bean>  
+	  
+	<bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">  
+	    <property name="targetConnectionFactory" ref="pooledConnectionFactory"/>  
+	</bean>  
+
+    <!-- 声明ActiveMQ消息目标,目标可以是一个队列，也可以是一个主题ActiveMQTopic-->
+    <!-- delivery query  -->
+    <bean id="queryDestination" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg index="0" value="com.yuecheng.hops.transaction.delivery.query"></constructor-arg>
+    </bean>
+    <bean id="queryJMSTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory"></property>
+        <property name="defaultDestination" ref="queryDestination"></property>
+    </bean>
+    
+    <bean id="queryProducerService" class="com.yuecheng.hops.transaction.mq.producer.DeliveryQueryProducerService">
+        <property name="jmsTemplate" ref="queryJMSTemplate"></property>
+    </bean>
+    <bean id="queryJMSContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+    	<property name="concurrentConsumers" value="10" />    
+        <property name="connectionFactory" ref="connectionFactory" />  
+        <property name="destination"       ref="queryDestination" />  
+        <property name="messageListener"   ref="queryConsumerMessageListener" />  
+        <!--0:CACHE_NONE,1:CACHE_CONNECTION,2:CACHE_SESSION,3:CACHE_CONSUMER,4:CACHE_AUTO-->  
+<!--         <property name="cacheLevel" value="0"/> -->
+    </bean> 
+    <bean id="queryConsumerMessageListener" class="com.yuecheng.hops.transaction.mq.consumer.DeliveryQueryMessageListener">
+<!--     	<property name="jmsTemplate" ref="queryJMSTemplate"></property> -->
+    </bean>  
+     
+    <!--order notify -->
+    <bean id="notifyDestination" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg index="0" value="com.yuecheng.hops.transaction.order.notify"></constructor-arg>
+    </bean>
+    <bean id="notifyJMSTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory"></property>
+        <property name="defaultDestination" ref="notifyDestination"></property>
+<!--         <property name="receiveTimeout" value="600"></property> -->
+    </bean>
+    <bean id="notifyProducerService" class="com.yuecheng.hops.transaction.mq.producer.OrderNotifyProducerService">
+        <property name="jmsTemplate" ref="notifyJMSTemplate"></property>
+    </bean>
+    <bean id="notifyJMSContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+    	<property name="concurrentConsumers" value="10" />    
+        <property name="connectionFactory" ref="connectionFactory" />  
+        <property name="destination"       ref="notifyDestination" />  
+        <property name="messageListener"   ref="notifyConsumerMessageListener" />  
+    </bean> 
+    <bean id="notifyConsumerMessageListener" class="com.yuecheng.hops.transaction.mq.consumer.OrderNotifyMessageListener">
+<!--     	<property name="jmsTemplate" ref="notifyJMSTemplate"></property> -->
+    </bean> 
+    
+    <!--receive syn_product_status message -->
+    <bean id="synProductStatusDestination" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg index="0" value="com.yuecheng.hops.business.syn.product.status.to.agent"></constructor-arg>
+    </bean>
+     <bean id="synProductStatusJMSContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+    	<property name="concurrentConsumers" value="10" />    
+        <property name="connectionFactory" ref="connectionFactory" />  
+        <property name="destination" ref="synProductStatusDestination" />  
+        <property name="messageListener" ref="synProductStatusConsumerMessageListener" />  
+    </bean> 
+    <bean id="synProductStatusConsumerMessageListener" class="com.yuecheng.hops.transaction.mq.consumer.SynProductStatusMessageListener">
+    </bean>  
+    
+</beans>

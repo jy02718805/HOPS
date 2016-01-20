@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd"
+	default-lazy-init="true">
+
+	<description>Dubbo Configuration</description>
+	<dubbo:consumer check="false"/>
+	<!-- 消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 -->
+    <dubbo:application name="${dubbo.application.name}" /> 
+    <!-- 使用multicast广播注册中心暴露发现服务地址 -->
+    <dubbo:registry address="${dubbo.registry.address}" /> 
+
+    <!-- 生成远程服务代理，可以和本地bean一样使用demoService -->
+    <dubbo:reference id="roleService" timeout="50000" interface="com.yuecheng.hops.privilege.service.RoleService"  />
+    <dubbo:reference id="menuService" timeout="50000" interface="com.yuecheng.hops.privilege.service.MenuService"  />
+    <dubbo:reference id="pageService" timeout="50000" interface="com.yuecheng.hops.privilege.service.PageResourceService"  />
+    <dubbo:reference id="identityRoleService" timeout="50000" interface="com.yuecheng.hops.privilege.service.IdentityRoleService"  />
+    <dubbo:reference id="identityRoleQueryService" timeout="50000" interface="com.yuecheng.hops.privilege.service.IdentityRoleQueryService"  />
+    <dubbo:reference id="rolePrivilegeService" timeout="50000" interface="com.yuecheng.hops.privilege.service.RolePrivilegeService"  />
+    <dubbo:reference id="rolePrivilegeQueryService" timeout="50000" interface="com.yuecheng.hops.privilege.service.RolePrivilegeQueryService"  />
+    <dubbo:reference id="privilegeService" timeout="50000" interface="com.yuecheng.hops.privilege.service.PrivilegeService"   />
+    <dubbo:reference id="roleMenuQueryService" timeout="50000" interface="com.yuecheng.hops.privilege.service.RoleMenuQueryService"   />
+    <dubbo:reference id="roleMenuService" timeout="50000" interface="com.yuecheng.hops.privilege.service.RoleMenuService"   />
+    <dubbo:reference id="loginService"   timeout="50000"    interface="com.yuecheng.hops.security.service.LoginService"  />
+    
+    
+    <dubbo:reference id="customerService" timeout="50000" interface="com.yuecheng.hops.identity.service.customer.CustomerService"  />
+    <dubbo:reference id="personService" timeout="50000" interface="com.yuecheng.hops.identity.service.customer.PersonService"  />
+    <dubbo:reference id="spService" timeout="50000" interface="com.yuecheng.hops.identity.service.sp.SpService"  />
+    <dubbo:reference id="identityService" timeout="50000" interface="com.yuecheng.hops.identity.service.IdentityService"  />
+	<dubbo:reference id="merchantService"   timeout="50000"    interface="com.yuecheng.hops.identity.service.merchant.MerchantService"  />
+    <dubbo:reference id="merchantStatusManagement"   timeout="50000"    interface="com.yuecheng.hops.identity.service.merchant.MerchantStatusManagement"  />
+    <dubbo:reference id="operatorService"   timeout="50000"    interface="com.yuecheng.hops.identity.service.operator.OperatorService" />
+    <dubbo:reference id="operatorPasswordManagement"   timeout="50000"    interface="com.yuecheng.hops.identity.service.operator.OperatorPasswordManagement" />
+	<dubbo:reference id="organizationService"   timeout="50000"    interface="com.yuecheng.hops.identity.service.merchant.OrganizationService"  />
+    
+    <dubbo:reference id="accountService" interface="com.yuecheng.hops.account.service.AccountService"  />
+    <dubbo:reference id="accountTypeService" interface="com.yuecheng.hops.account.service.AccountTypeService"  />
+    <dubbo:reference id="currencyAccountService" timeout="50000" interface="com.yuecheng.hops.account.service.CurrencyAccountService"  />
+    <dubbo:reference id="cardAccountService" interface="com.yuecheng.hops.account.service.CardAccountService"  />
+	<dubbo:reference id="productService" interface="com.yuecheng.hops.product.service.ProductService"  />
+	<dubbo:reference id="agentProductRelationService" interface="com.yuecheng.hops.product.service.AgentProductRelationService"  />
+	<dubbo:reference id="supplyProductRelationService" interface="com.yuecheng.hops.product.service.SupplyProductRelationService"  />
+	<dubbo:reference id="productTypeService" interface="com.yuecheng.hops.product.service.ProductTypeService"  />
+    <dubbo:reference id="provinceService" timeout="50000" interface="com.yuecheng.hops.numsection.service.ProvinceService"  />
+    <dubbo:reference id="cityService" timeout="50000" interface="com.yuecheng.hops.numsection.service.CityService"  />
+    <dubbo:reference id="carrierInfoService" timeout="50000" interface="com.yuecheng.hops.numsection.service.CarrierInfoService"  />
+    <dubbo:reference id="merchantResponseService" timeout="50000" interface="com.yuecheng.hops.injection.service.MerchantResponseService"  />
+	<dubbo:reference id="responseCodeTranslationService" timeout="50000" interface="com.yuecheng.hops.injection.service.ResponseCodeTranslationService"  />
+    <dubbo:reference id="transactionHistoryService" timeout="50000" interface="com.yuecheng.hops.account.service.TransactionHistoryService"/>
+	<dubbo:reference id="hopsConstantService" timeout="50000" interface="com.yuecheng.hops.parameter.service.ParameterConfigurationService"  />
+	<dubbo:reference id="identityAccountRoleService" timeout="50000" interface="com.yuecheng.hops.account.service.IdentityAccountRoleService"  />
+ 	<dubbo:reference id="currencyAccountBalanceHistoryService"  timeout="50000" interface="com.yuecheng.hops.account.service.CurrencyAccountBalanceHistoryService" />
+ 	<dubbo:reference id="reportPropertyService" timeout="50000" interface="com.yuecheng.hops.report.service.ReportPropertyService"  />
+ 	<dubbo:reference id="reportTypeService" timeout="50000" interface="com.yuecheng.hops.report.service.ReportTypeService"  />
+ 	<dubbo:reference id="transactionService" timeout="50000" interface="com.yuecheng.hops.transaction.TransactionService"  retries="0"/>
+ 	
+	<dubbo:reference id="orderService" timeout="50000" interface="com.yuecheng.hops.transaction.service.order.OrderService" />
+ 	<dubbo:reference id="orderManagement" timeout="50000" interface="com.yuecheng.hops.transaction.service.order.OrderManagement"/>
+ 	<dubbo:reference id="orderPageQuery" timeout="50000" interface="com.yuecheng.hops.transaction.service.order.OrderPageQuery"  />
+ 	<dubbo:reference id="orderStatusManagement" timeout="50000" interface="com.yuecheng.hops.transaction.service.order.OrderStatusManagement"  />
+ 	<dubbo:reference id="deliveryService" timeout="50000" interface="com.yuecheng.hops.transaction.service.delivery.DeliveryService"  />
+ 	<dubbo:reference id="deliveryManagement" timeout="50000" interface="com.yuecheng.hops.transaction.service.delivery.DeliveryManagement"  />
+ 	
+ 	<dubbo:reference id="merchantPageQuery" timeout="50000" interface="com.yuecheng.hops.identity.service.merchant.MerchantPageQuery"  />
+ 	<dubbo:reference id="productPropertyService" timeout="50000" interface="com.yuecheng.hops.product.service.ProductPropertyService"  />
+ 	<dubbo:reference id="productPageQuery" interface="com.yuecheng.hops.product.service.ProductPageQuery" />
+ 	
+ 	<dubbo:reference id="currencyAccountAddCashRecordService" timeout="50000" interface="com.yuecheng.hops.account.service.CurrencyAccountAddCashRecordService" />
+ 	<!-- 密钥相关 start -->
+ 	<dubbo:reference id="securityKeystoreService" timeout="50000" interface="com.yuecheng.hops.security.service.SecurityKeystoreService" />
+	<dubbo:reference id="securityCredentialService" timeout="50000" interface="com.yuecheng.hops.security.service.SecurityCredentialService"  />
+ 	<dubbo:reference id="securityCredentialManagerService" timeout="50000" interface="com.yuecheng.hops.security.service.SecurityCredentialManagerService" />
+	<dubbo:reference id="securityruleservice" timeout="50000" interface="com.yuecheng.hops.security.service.SecurityRuleService"  />
+	<dubbo:reference id="securityTypeService" timeout="50000" interface="com.yuecheng.hops.security.service.SecurityTypeService"  />
+ 	<!-- 密钥相关 end -->
+ 	<dubbo:reference timeout="120000"  id="ccyAccountService"  interface="com.yuecheng.hops.account.service.CCYAccountService"/>
+ </beans>

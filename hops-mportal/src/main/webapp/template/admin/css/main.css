@@ -1,0 +1,57 @@
+TABLE.main {
+	WIDTH: 100%; HEIGHT: 100%
+}
+TABLE.main TH {
+	BACKGROUND: url(../images/main.gif) repeat-x 0px 0px; HEIGHT: 60px
+}
+TABLE.main TD {
+	VERTICAL-ALIGN: top
+}
+TABLE.main .logo {
+	WIDTH: 160px; VERTICAL-ALIGN: middle
+}
+TABLE.main .nav {
+	WIDTH: 900px; WHITE-SPACE: nowrap; FLOAT: left; HEIGHT: 30px; PADDING-TOP: 30px
+}
+TABLE.main .nav LI {
+	PADDING-BOTTOM: 0px; PADDING-LEFT: 2px; WIDTH: 70px; PADDING-RIGHT: 2px; BACKGROUND: url(../images/main.gif) no-repeat right -60px; FLOAT: left; PADDING-TOP: 0px
+}
+TABLE.main .nav LI A {
+	TEXT-ALIGN: center; PADDING-BOTTOM: 0px; LINE-HEIGHT: 30px; OUTLINE-STYLE: none; OUTLINE-COLOR: invert; PADDING-LEFT: 6px; OUTLINE-WIDTH: medium; PADDING-RIGHT: 6px; DISPLAY: block; HEIGHT: 30px; COLOR: #488bd1; FONT-SIZE: 14px; FONT-WEIGHT: bold; PADDING-TOP: 0px
+}
+TABLE.main .nav LI A:hover {
+	BORDER-BOTTOM: #0099cc 2px solid; LINE-HEIGHT: 28px; HEIGHT: 28px
+}
+TABLE.main LI A.current {
+	BORDER-BOTTOM: #0099cc 2px solid; LINE-HEIGHT: 28px; HEIGHT: 28px
+}
+TABLE.main .link {
+	TEXT-ALIGN: right; LINE-HEIGHT: 29px; WIDTH: 240px; WHITE-SPACE: nowrap; FLOAT: right; HEIGHT: 29px; CLEAR: right; OVERFLOW: hidden
+}
+TABLE.main .link A {
+	PADDING-BOTTOM: 0px; PADDING-LEFT: 6px; PADDING-RIGHT: 6px; PADDING-TOP: 0px
+}
+TABLE.main .menu {
+	BACKGROUND-COLOR: #f5faff; BORDER-RIGHT: #a3c4d7 1px solid
+}
+TABLE.main .menu DL {
+	PADDING-BOTTOM: 0px; PADDING-LEFT: 6px; PADDING-RIGHT: 6px; DISPLAY: none; PADDING-TOP: 0px
+}
+TABLE.main .menu .default {
+	DISPLAY: block
+}
+TABLE.main .menu DT {
+	BORDER-BOTTOM: #b7d3e1 1px dashed; LINE-HEIGHT: 26px; PADDING-LEFT: 10px; HEIGHT: 26px; COLOR: #333333; FONT-WEIGHT: bold
+}
+TABLE.main .menu DD A {
+	LINE-HEIGHT: 26px; OUTLINE-STYLE: none; OUTLINE-COLOR: invert; PADDING-LEFT: 10px; OUTLINE-WIDTH: medium; DISPLAY: block; HEIGHT: 26px; COLOR: #666666
+}
+TABLE.main .menu DD A:hover {
+	BACKGROUND-COLOR: #eaf4ff
+}
+TABLE.main .menu DD A.current {
+	BACKGROUND-COLOR: #e4f2fa
+}
+TABLE.main IFRAME {
+	WIDTH: 100%; HEIGHT: 100%
+}

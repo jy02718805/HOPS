@@ -1,0 +1,92 @@
+html {
+	height: 100%;
+	position: relative;
+	background: url(bg/login_bg.jpg) no-repeat top center fixed;
+	overflow-x:hidden;
+}
+html.user-bg {
+	background: url(bg/login_bg_user.jpg) no-repeat top center fixed;
+}
+.container{z-index:777;}
+.bg{width:100%; height:100%; overflow:hidden; z-index:7; position:absolute; left:0; top:0;}
+.bg img{width:100%; height:100%; position:absolute;}
+.login-header {
+	padding-top: 50px;
+}
+.login-box{
+	padding-top: 140px;
+}
+.login-form {
+	width: 470px;
+	margin: 0 auto;
+}
+.login-form p {
+	background-color: #9bb0d7;
+	margin-bottom: 30px;
+	height: 50px;
+}
+.login-form p label {
+	display: block;
+	float: left;
+	width: 50px;
+	height: 50px;
+	zoom: 1;
+	text-indent: -99999px;
+	background-image:url(bg/ico-login-input.gif);
+	background-repeat:no-repeat;
+}
+.login-ico-user{
+	background-position:0 0;}
+.login-ico-pass{
+	background-position:0 -50px;}
+.input {
+	height: 20px;
+	line-height:20px;
+	padding:15px 0 15px 20px;
+	border: 0;
+	background-color: #fff;
+	width: 400px;
+	zoom:1;
+	float:left;
+	font-size:16px;
+	font-family:\5FAE\8F6F\96C5\9ED1, "Helvetica Neue";
+	color:#414141;
+	margin:0;
+}
+.btn-block {
+	display: block;
+	width: 100%;
+	text-align: center;
+	height: 50px;
+	line-height: 45px;
+	background-color: #ef8d02;
+	cursor: pointer;
+	color: #fff;
+	border:0;
+	border-bottom:5px solid #de8200;
+	font-size: 24px;
+	font-family:\5FAE\8F6F\96C5\9ED1, "Helvetica Neue";
+}
+.btn-block:hover{
+	background-color:#e38600;
+	border-color:#b76c00;
+}
+.btn-block:active {
+	position:relative;
+	top:1px;
+}
+.login-footer{
+	position:absolute;
+	margin-left:-500px;
+	left:50%;
+	color:#001f3c;
+	font-size:14px;
+	bottom:40px;
+	text-align:left;}
+p.login-footer-company{
+	font-weight:700;
+	height:30px;
+	line-height:30px;
+	font-family:\5FAE\8F6F\96C5\9ED1, "Helvetica Neue";
+	}
+.btn-block { border-color:#de8200; }

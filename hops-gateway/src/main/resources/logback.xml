@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%date{ISO8601} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+
+	<appender name="rollingFile"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${catalina.home}/logs/hops-gateway-log.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                        <fileNamePattern>${catalina.home}/logs/hops-gateway-%d{yyyy-MM-dd}-%i.log
+                        </fileNamePattern>
+                        <maxHistory>4</maxHistory>
+                        <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                        <maxFileSize>600MB</maxFileSize>
+                        </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+		<encoder>
+			<pattern>%date{ISO8601} [%thread] %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+
+	<logger name="com.yuecheng.hops">
+		<level value="INFO" />
+	</logger>
+
+	<root level="ERROR">
+		<!-- <appender-ref ref="console" /> -->
+		<appender-ref ref="rollingFile" />
+	</root>
+</configuration>

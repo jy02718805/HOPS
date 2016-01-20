@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa" xmlns:cache="http://www.springframework.org/schema/cache"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd
+		http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.0.xsd"
+	default-lazy-init="true">
+
+	<description>Spring公共配置 </description>
+
+	<dubbo:consumer check="false"/>
+	<!-- 提供方应用信息，用于计算依赖关系 -->
+	<dubbo:application name="${dubbo.application.name}" /> 
+	<!-- 使用multicast广播注册中心暴露服务地址 -->
+ 	<dubbo:registry address="${dubbo.registry.address}" /> 
+	<!-- 用dubbo协议在端口暴露服务 -->
+ 	<dubbo:protocol name="dubbo" port="${dubbo.protocol.port}" threadpool="fixed" threads="${dubbo.threads}"/>
+	<!-- 和本地bean一样实现服务 --> 
+	<!-- 生成远程服务代理，可以和本地bean一样使用demoService -->
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="supplyDupNumRuleService"  interface="com.yuecheng.hops.parameter.service.SupplyDupNumRuleService"  retries="0"  />
+    <dubbo:reference timeout="120000" cluster="failsafe"   id="numSectionService"  interface="com.yuecheng.hops.numsection.service.NumSectionService"  retries="0"/>
+    <dubbo:reference timeout="120000" cluster="failsafe"   id="checkNumSectionService"  interface="com.yuecheng.hops.numsection.service.CheckNumSectionService"  retries="0"/>
+    <dubbo:reference timeout="120000" cluster="failsafe"   id="blacklistService"  interface="com.yuecheng.hops.blacklist.service.BlacklistService"  retries="0"/>
+    <dubbo:reference timeout="120000" cluster="failsafe"   id="checkBlacklistService"  interface="com.yuecheng.hops.blacklist.service.CheckBlacklistService"  retries="0"/>
+    <dubbo:reference timeout="120000" cluster="failsafe"   id="merchantService"  interface="com.yuecheng.hops.identity.service.merchant.MerchantService"  retries="0"/>
+    <dubbo:reference timeout="120000" cluster="failsafe"   id="ccyAccountService"  interface="com.yuecheng.hops.account.service.CCYAccountService" retries="0" />
+    <dubbo:reference timeout="120000" cluster="failsafe"   id="accountTransferService"  interface="com.yuecheng.hops.account.service.AccountTransferService" retries="0"  />
+    <dubbo:reference timeout="120000" cluster="failsafe"   id="accountRefundService"  interface="com.yuecheng.hops.account.service.AccountRefundService" retries="0"  />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="productService" interface="com.yuecheng.hops.product.service.ProductService"  retries="0"/>
+	
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="productManagement" interface="com.yuecheng.hops.product.service.ProductManagement"  retries="0"/>
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="productPageQuery" interface="com.yuecheng.hops.product.service.ProductPageQuery"  retries="0"/>
+	
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="agentProductRelationService" interface="com.yuecheng.hops.product.service.AgentProductRelationService" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="supplyProductRelationService" interface="com.yuecheng.hops.product.service.SupplyProductRelationService" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="securityCredentialService" interface="com.yuecheng.hops.security.service.SecurityCredentialService" retries="0"/>
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="spService" interface="com.yuecheng.hops.identity.service.sp.SpService" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="currencyAccountBalanceHistoryService"  interface="com.yuecheng.hops.account.service.CurrencyAccountBalanceHistoryService" retries="0"  />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="provinceService"  interface="com.yuecheng.hops.numsection.service.ProvinceService" retries="0" />
+   	<dubbo:reference timeout="120000" cluster="failsafe"   id="accountServiceFinder"   interface="com.yuecheng.hops.account.service.AccountServiceFinder" retries="0" />
+ 	<dubbo:reference timeout="120000" cluster="failsafe"   id="identityAccountRoleService"  interface="com.yuecheng.hops.account.service.IdentityAccountRoleService"  retries="0"/>
+ 	<dubbo:reference timeout="120000" cluster="failsafe"   id="identityService"  interface="com.yuecheng.hops.identity.service.IdentityService" retries="0" />
+ 	<dubbo:reference timeout="120000" cluster="failsafe"   id="cityService"  interface="com.yuecheng.hops.numsection.service.CityService" retries="0" />
+ 	<dubbo:reference timeout="120000" cluster="failsafe"   id="carrierInfoService"  interface="com.yuecheng.hops.numsection.service.CarrierInfoService"  />
+ 	<dubbo:reference timeout="120000" cluster="failsafe"   id="parameterConfigurationService"  interface="com.yuecheng.hops.parameter.service.ParameterConfigurationService" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="merchantStatusManagement"  interface="com.yuecheng.hops.identity.service.merchant.MerchantStatusManagement" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="merchantPageQuery"  interface="com.yuecheng.hops.identity.service.merchant.MerchantPageQuery" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="transactionHistoryService"  interface="com.yuecheng.hops.account.service.TransactionHistoryService" retries="0" />
+	
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="securityCredentialManagerService"  interface="com.yuecheng.hops.security.service.SecurityCredentialManagerService" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="accountTypeService"  interface="com.yuecheng.hops.account.service.AccountTypeService" retries="0"/>
+	
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="gatewayService"  interface="com.yuecheng.hops.common.service.GatewayService" check="false" retries="0" />
+	
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="merchantRequestService"   interface="com.yuecheng.hops.injection.service.MerchantRequestService" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="merchantResponseService"   interface="com.yuecheng.hops.injection.service.MerchantResponseService" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="interfaceConstantService"   interface="com.yuecheng.hops.injection.service.InterfaceConstantService" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="interfaceService"   interface="com.yuecheng.hops.injection.service.InterfaceService" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="interfacePacketTypeConfService"   interface="com.yuecheng.hops.injection.service.InterfacePacketTypeConfService" retries="0" />
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="interfaceSendtimesConfService"   interface="com.yuecheng.hops.injection.service.InterfaceSendtimesConfService"  retries="0"/>
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="errorCodeService"   interface="com.yuecheng.hops.injection.service.ErrorCodeService" retries="0" />
+	
+	<dubbo:reference timeout="120000" cluster="failsafe"   id="responseCodeTranslationService"  interface="com.yuecheng.hops.injection.service.ResponseCodeTranslationService" retries="0"/>
+	
+	
+	
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.config.SupplyQueryTacticsService" ref="supplyQueryTacticsService"  retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.config.AgentQueryFakeRuleService" ref="agentQueryFakeRuleService"  retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.config.product.MerchantProductLevelService" ref="merchantProductLevelService" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.config.product.AssignExcludeService" ref="assignExcludeService" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.config.product.QualityWeightRuleService" ref="qualityWeightRuleService" retries="0" />
+	
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.execution.order.OrderTransaction" ref="orderTransaction" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.service.order.OrderService" ref="orderService" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.service.order.OrderManagement" ref="orderManagement" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.service.order.OrderPageQuery" ref="orderPageQuery" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.service.delivery.DeliveryManagement" ref="deliveryManagement" retries="0" />
+	
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.rebate.service.RebateRuleService" ref="rebateRuleService" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.rebate.service.RebateRuleQueryManager" ref="rebateRuleQueryManager" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.rebate.service.RebateRecordService" ref="rebateRecordService" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.rebate.service.RebateRecordHistoryService" ref="rebateRecordHistoryService" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.rebate.service.RebateProductService" ref="rebateProductService" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.rebate.service.RebateProductQueryManager" ref="rebateProductQueryManager" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.rebate.service.RebateTradingVolumeService" ref="rebateTradingVolumeService" retries="0"/>
+	
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.report.service.TransactionReportService" ref="transactionReportService" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.report.service.ProfitReportService" ref="profitReportService" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.report.service.ReportTypeService" ref="reportTypeService" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.report.service.ReportPropertyService" ref="reportPropertyService" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.report.service.AccountReportService" ref="accountReportService" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.service.profitImputation.ProfitImputationInfoService" ref="profitImputationInfoService" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.service.order.OrderManagement" ref="orderManagement" retries="0" />
+	
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.service.order.OrderApplyOperateHistoryService" ref="orderApplyOperateHistoryService" retries="0" />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.service.notify.NotifyService" ref="notifyService" retries="0"   />
+	<!-- 批量手工补单  -->
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.batch.service.order.BatchOrderRequestHandlerManagement" ref="batchOrderRequestHandlerManagement" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.batch.service.order.BatchJobDetailService" ref="batchJobDetailService" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.batch.service.order.BatchJobService" ref="batchJobService" retries="0"/>          
+	
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.TransactionService" ref="transactionService" retries="0"  />
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.report.service.AgentTransactionReportService" ref="agentTransactionReportService" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.report.service.SupplyTransactionReportService" ref="supplyTransactionReportService" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.transaction.execution.imputation.ProfitImputationService" ref="profitImputationService" retries="0"/>
+	<dubbo:service timeout="120000" cluster="failsafe"   interface="com.yuecheng.hops.report.service.RefundReportService" ref="refundReportService" retries="0"/>
+</beans>

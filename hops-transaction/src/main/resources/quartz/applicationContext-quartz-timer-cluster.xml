@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+	<description>Quartz的定时集群任务配置</description>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<!--<ref bean="sc_timerTrigger1" />计算上游质量分 -->
+				<ref bean="sc_timerTrigger2" /><!-- 绑定 -->
+				<ref bean="sc_timerTrigger3" /><!-- 发货 -->
+				<ref bean="sc_timerTrigger4" /><!-- 查单 -->
+				<ref bean="sc_timerTrigger5" /><!-- 通知 -->
+				<ref bean="sc_timerTrigger6" /><!-- 预成功 -->
+				<ref bean="sc_timerTrigger7" /><!-- 关闭异常发货记录 -->
+				<ref bean="sc_cronTrigger" /><!-- 登记返佣记录 -->
+				<ref bean="sc_reportTrigger1" /><!-- 利润(代理商)报表日统计 -->
+				<!-- <ref bean="sc_reportTrigger2" />交易量(供货商)报表日统计 -->
+				<!-- <ref bean="sc_reportTrigger3" />账户报表日统计 -->
+				<ref bean="sc_reportTrigger4" /><!-- 代理商交易量报表日统计 -->
+				<ref bean="sc_reportTrigger5" /><!-- 供货商 交易量报表日统计 -->
+				<!--<ref bean="sc_reportTrigger6" /> 交易量(代理商)报表日统计 -->
+				<ref bean="sc_reportTrigger7" /><!-- 利润(供货商)报表日统计 -->
+				<ref bean="sc_reportTrigger8" /><!-- 代理商退款报表 -->
+				<ref bean="sc_reportTrigger9" /><!-- 供货商退款报表 -->
+				<ref bean="sc_profitImputation" /><!-- 归集 -->
+				<ref bean="sc_stopExpirationSecurity" /><!-- 废弃过期的密钥 -->
+			</list>
+		</property>
+		<property name="autoStartup" value="true" />
+	</bean>
+
+	<!-- 计算上游质量分 begin -->
+	<bean id="sc_timerTrigger1" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="calculateScoreJobDetail" />
+		<property name="cronExpression" value="0 5 0 * * ?" /><!-- 每隔1秒钟触发一次 -->
+	</bean>
+
+	<bean id="calculateScoreJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="calculateScoreServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+
+	<bean id="calculateScoreServiceJob"
+		class="com.yuecheng.hops.transaction.schedule.quartz.CalculateScoreServiceJob">
+		<property name="supplyMerchantTransaction" ref="supplyMerchantTransaction"></property>
+	</bean>
+	<!-- 计算上游质量分 end -->
+
+	<!-- 绑定 begin -->
+	<bean id="sc_timerTrigger2" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_timerJobDetail2" />
+		<property name="cronExpression" value="*/1 * * * * ?" /><!-- 每隔1秒钟触发一次 -->
+	</bean>
+
+	<bean id="sc_timerJobDetail2"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="deliveryServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+
+	<bean id="deliveryServiceJob"
+		class="com.yuecheng.hops.transaction.schedule.quartz.BindServiceJob">
+		<property name="agentOrderPengdingBindScanner" ref="agentOrderPengdingBindScanner"></property>
+	</bean>
+	<!-- 绑定 end -->
+
+	<!-- 发货 begin -->
+	<bean id="sc_timerTrigger3" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_timerJobDetail3" />
+		<property name="cronExpression" value="*/1 * * * * ?" /><!-- 每隔1秒钟触发一次 -->
+	</bean>
+
+	<bean id="sc_timerJobDetail3"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="sendOrdersServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+
+	<bean id="sendOrdersServiceJob"
+		class="com.yuecheng.hops.transaction.schedule.quartz.SendOrdersServiceJob">
+		<property name="supplyOrderPendingSendScanner" ref="supplyOrderPendingSendScanner"></property>
+	</bean>
+	<!-- 发货 end -->
+
+	<!-- 查单 begin -->
+	<bean id="sc_timerTrigger4" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_timerJobDetail4" />
+		<property name="cronExpression" value="*/4 * * * * ?" /><!-- 每隔4秒钟触发一次 -->
+	</bean>
+
+	<bean id="sc_timerJobDetail4"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="queryOrderServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+
+	<bean id="queryOrderServiceJob"
+		class="com.yuecheng.hops.transaction.schedule.quartz.QueryOrderServiceJob">
+		<property name="supplyOrderPendingQueryScanner" ref="supplyOrderPendingQueryScanner"></property>
+	</bean>
+	<!-- 查单 end -->
+
+	<!-- 通知 begin -->
+	<bean id="sc_timerTrigger5" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_timerJobDetail5" />
+		<property name="cronExpression" value="*/1 * * * * ?" /><!-- 每隔1秒钟触发一次 -->
+	</bean>
+
+	<bean id="sc_timerJobDetail5"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="notifyServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+
+	<bean id="notifyServiceJob"
+		class="com.yuecheng.hops.transaction.schedule.quartz.NotifyServiceJob">
+		<property name="agentOrderPendingNotifyScanner" ref="agentOrderPendingNotifyScanner"></property>
+	</bean>
+	<!-- 通知 end -->
+
+	<!-- 预成功 begin -->
+	<bean id="sc_timerTrigger6" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_timerJobDetail6" />
+		<property name="cronExpression" value="*/1 * * * * ?" /><!-- 每隔1秒钟触发一次 -->
+	</bean>
+
+	<bean id="sc_timerJobDetail6"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="fakeRuleServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+
+	<bean id="fakeRuleServiceJob"
+		class="com.yuecheng.hops.transaction.schedule.quartz.FakeRuleServiceJob">
+		<property name="pendingFakeOrderScanner" ref="pendingFakeOrderScanner"></property>
+	</bean>
+	<!-- 预成功 end -->
+
+	<!-- 登记返佣记录 begin -->
+	<bean id="sc_cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_cronjobDetail" />
+		<property name="cronExpression" value="0 0 5 * * ? *" /><!-- 每天5点触发一次 -->
+		<!-- <property name="cronExpression" value="0 5 6 10 * ?" />每月5号6点10分启动 -->
+	</bean>
+
+	<bean id="sc_cronjobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="calRebateRecordServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+
+	<bean id="calRebateRecordServiceJob"
+		class="com.yuecheng.hops.rebate.schedule.quartz.CalRebateRecordServiceJob">
+		<property name="rebateRecordService" ref="rebateRecordService"></property>
+	</bean>
+	<!-- 登记返佣记录 end -->
+
+	<!-- 报表 -->
+
+	<bean id="sc_reportTrigger1" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_reportJobDetail1" />
+		<property name="cronExpression" value="0 0 1 * * ? *" />
+	</bean>
+	<bean id="sc_reportJobDetail1"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="pofitReportAgentServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="pofitReportAgentServiceJob"
+		class="com.yuecheng.hops.report.schedule.quartz.PofitReportAgentServiceJob">
+		<property name="profitReportAction" ref="profitReportAction"></property>
+	</bean>
+
+	<bean id="sc_reportTrigger2" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_reportJobDetail2" />
+		<property name="cronExpression" value="0 15 1 * * ? *" />
+	</bean>
+	<bean id="sc_reportJobDetail2"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="transactionAgentReportServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="transactionAgentReportServiceJob"
+		class="com.yuecheng.hops.report.schedule.quartz.TransactionAgentReportServiceJob">
+		<property name="transactionReportAction" ref="transactionReportAction"></property>
+	</bean>
+
+
+	<bean id="sc_reportTrigger3" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_reportJobDetail3" />
+		<property name="cronExpression" value="0 0 1 * * ? *" /><!-- 每天触发一次 -->
+	</bean>
+	<bean id="sc_reportJobDetail3"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="accountReportServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+	<bean id="accountReportServiceJob"
+		class="com.yuecheng.hops.report.schedule.quartz.AccountReportServiceJob">
+		<property name="accountReportAction" ref="accountReportAction"></property>
+	</bean>
+
+	<bean id="sc_reportTrigger4" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_reportJobDetail4" />
+		<property name="cronExpression" value="0 20 1 * * ? *" /><!-- 
+			每天触发一次 -->
+	</bean>
+	<bean id="sc_reportJobDetail4"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="agentTransactionReportServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+	<bean id="agentTransactionReportServiceJob"
+		class="com.yuecheng.hops.report.schedule.quartz.AgentTransactionReportServiceJob">
+		<property name="merchantTransactionReportAcion" ref="merchantTransactionReportAcion"></property>
+	</bean>
+
+	<bean id="sc_reportTrigger5" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_reportJobDetail5" />
+		<property name="cronExpression" value="0 30 1 * * ? *" /><!-- 
+			每天触发一次 -->
+	</bean>
+	<bean id="sc_reportJobDetail5"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="supplyTransactionReportServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+	<bean id="supplyTransactionReportServiceJob"
+		class="com.yuecheng.hops.report.schedule.quartz.SupplyTransactionReportServiceJob">
+		<property name="merchantTransactionReportAcion" ref="merchantTransactionReportAcion"></property>
+	</bean>
+
+	<bean id="sc_reportTrigger6" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_reportJobDetail6" />
+		<property name="cronExpression" value="0 10 1 * * ? *" />
+	</bean>
+	<bean id="sc_reportJobDetail6"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="transactionSupplyReportServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="transactionSupplyReportServiceJob"
+		class="com.yuecheng.hops.report.schedule.quartz.TransactionSupplyReportServiceJob">
+		<property name="transactionReportAction" ref="transactionReportAction"></property>
+	</bean>
+
+	<bean id="sc_reportTrigger7" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_reportJobDetail7" />
+		<property name="cronExpression" value="0 10 1 * * ? *" />
+	</bean>
+	<bean id="sc_reportJobDetail7"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="pofitReportSupplyServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="pofitReportSupplyServiceJob"
+		class="com.yuecheng.hops.report.schedule.quartz.PofitReportSupplyServiceJob">
+		<property name="profitReportAction" ref="profitReportAction"></property>
+	</bean>
+
+	<bean id="sc_reportTrigger8" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_reportJobDetail8" />
+		<property name="cronExpression" value="0 3 10 * * ? *" />
+	</bean>
+	<bean id="sc_reportJobDetail8"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="refundReportAgentServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="refundReportAgentServiceJob"
+		class="com.yuecheng.hops.report.schedule.quartz.RefundReportAgentServiceJob">
+		<property name="refundReportAction" ref="refundReportAction"></property>
+	</bean>
+
+
+	<bean id="sc_reportTrigger9" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_reportJobDetail9" />
+		<property name="cronExpression" value="0 30 3 * * ? *" />
+	</bean>
+	<bean id="sc_reportJobDetail9"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="refundReportSupplyServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="refundReportSupplyServiceJob"
+		class="com.yuecheng.hops.report.schedule.quartz.RefundReportSupplyServiceJob">
+		<property name="refundReportAction" ref="refundReportAction"></property>
+	</bean>
+	<!-- 报表 end -->
+
+	<!-- 归集 -->
+	<bean id="sc_profitImputation" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_profitImputationDetail" />
+		<property name="cronExpression" value="0 0 10 * * ? *" /><!-- 
+			每天凌晨2点 触发一次 -->
+	</bean>
+
+	<bean id="sc_profitImputationDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="scanningProfitImputationServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+	<bean id="scanningProfitImputationServiceJob"
+		class="com.yuecheng.hops.transaction.schedule.quartz.ScanningProfitImputationServiceJob">
+		<property name="profitImputationScanner" ref="profitImputationScanner"></property>
+	</bean>
+
+	<!-- 停止过期密钥 -->
+	<bean id="sc_stopExpirationSecurity" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_stopExpirationSecurityDetail" />
+		<property name="cronExpression" value="0 30 1 * * ? *" /><!-- 
+			每天凌晨2点 触发一次 -->
+	</bean>
+
+	<bean id="sc_stopExpirationSecurityDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="stopExpirationSecurityServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+	<bean id="stopExpirationSecurityServiceJob"
+		class="com.yuecheng.hops.transaction.schedule.quartz.StopExpirationSecurityServiceJob">
+		<property name="securityCredentialManagerService" ref="securityCredentialManagerService"></property>
+	</bean>
+	
+	<!-- 关闭发货记录 begin -->
+	<bean id="sc_timerTrigger7" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_timerJobDetail7" />
+		<property name="cronExpression" value="0 0/10 * * * ?" /><!-- 每隔10分钟触发一次 -->
+	</bean>
+
+	<bean id="sc_timerJobDetail7"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="closeDeliveryServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+
+	<bean id="closeDeliveryServiceJob"
+		class="com.yuecheng.hops.transaction.schedule.quartz.CloseDeliveryServiceJob">
+		<property name="closeDeliveryScanner" ref="closeDeliveryScanner"></property>
+	</bean>
+	<!-- 关闭发货记录 end -->
+	
+	<!-- 扫描运行可执行的批量充值任务 begin -->
+	<bean id="sc_cronBatchJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="sc_cronBatchJobDetail" />
+		<property name="cronExpression" value="*/31 * * * * ?" /><!-- 每天5点触发一次 -->
+		<!-- <property name="cronExpression" value="0 5 6 10 * ?" />每月5号6点10分启动 -->
+	</bean>
+
+	<bean id="sc_cronBatchJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="batchOrderHandlerServiceJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="false" />
+		<!-- 是否允许任务并发执行。当值为false时，表示必须等到前一个线程处理完毕后才再启一个新的线程 -->
+	</bean>
+
+	<bean id="batchOrderHandlerServiceJob"
+		class="com.yuecheng.hops.batch.schedule.quartz.BatchOrderHandlerServiceJob">
+		<property name="batchOrderHandlerService" ref="batchOrderHandlerService"></property>
+	</bean>
+	<!-- 扫描运行可执行的批量充值任务 end -->
+
+</beans>

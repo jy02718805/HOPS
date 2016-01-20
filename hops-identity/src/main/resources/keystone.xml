@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="GB2312"?>
+<root>
+	<parameter id="1">
+		<type>keystore</type>
+		<filename>Service_Keystone</filename>
+		<filepath>d:/</filepath>
+		<systemaliasname>Service_Keystone_hopsca</systemaliasname>
+	</parameter>
+	<parameter id="2">
+		<type>keystore</type>
+		<filename>Service_Keystone</filename>
+		<filepath>d:/</filepath>
+		<systemaliasname>Service_Keystone_serverca</systemaliasname>
+	</parameter>
+	<parameter id="3">
+		<type>keystore</type>
+		<filename>Service_Keystone</filename>
+		<filepath>d:/</filepath>
+		<systemaliasname>Service_Keystone_service_keystone</systemaliasname>
+	</parameter>
+	<parameter id="4">
+		<type>pfx</type>
+		<filename>HOPSCA.pfx</filename>
+		<filepath>d:/</filepath>
+		<systemaliasname>HOPSCA.pfx_hopsca</systemaliasname>
+	</parameter>
+	<parameter id="5">
+		<type>pfx</type>
+		<filename>SERVERCA.pfx</filename>
+		<filepath>d:/</filepath>
+		<systemaliasname>SERVERCA.pfx_serverca</systemaliasname>
+	</parameter>
+</root>

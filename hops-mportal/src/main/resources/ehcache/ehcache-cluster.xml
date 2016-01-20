@@ -1,0 +1,27 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="ehcache.xsd">
+<!-- 	<cacheManagerPeerProviderFactory -->
+<!-- 		class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory" -->
+<!-- 		properties="peerDiscovery=manual,  -->
+<!--          rmiUrls=//localhost:40002/UserCache|//localhost:40003/UserCache" />  -->
+
+	<cacheManagerPeerProviderFactory
+	    class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+	    properties="peerDiscovery=automatic, multicastGroupAddress=230.0.0.1,
+	    	multicastGroupPort=4450, timeToLive=255"/>  
+
+	<cacheManagerPeerListenerFactory
+		class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+		properties="hostName=localhost,port=40001, socketTimeoutMillis=2000" />
+
+	<cache name="UserCache" maxElementsInMemory="10000" >
+		<cacheEventListenerFactory
+			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=true,
+                            replicatePutsViaCopy=true, replicateUpdates=true,
+                            replicateUpdatesViaCopy=true, replicateRemovals=true,
+                            asynchronousReplicationIntervalMillis=0" />
+		<bootstrapCacheLoaderFactory
+			class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
+	</cache>
+</ehcache>

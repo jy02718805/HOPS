@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+	<description>Spring netty配置 </description>
+
+	<bean id="entityManagerFactoryScanList" class="java.util.ArrayList">
+		<constructor-arg>
+			<list>
+				<value>com.yuecheng.hops.gateway.entity</value>
+				<value>com.yuecheng.hops.transaction.entity</value>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<bean id="httpServer"
+		class="com.yuecheng.hops.gateway.communication.netty.http.NettyHttpServer"
+		init-method="start" destroy-method="stop">
+		<property name="port">
+			<!-- SIT -->
+			<value>48455</value>			
+ <!-- DEV -->
+<!-- 			<value>9288</value> -->
+		</property>
+		<property name="tcpNoDelay">
+			<value>true</value>
+		</property>
+		<property name="keepAlive">
+			<value>false</value>
+		</property>
+		<property name="pipelineFactory" ref="sslHttpServerPipelineFactory"></property>
+<!-- 	    <property name="workThreadExecutor" ref="workThreadExecutor"></property> -->
+		<property name="ioWorkNumber">
+			<value>100</value>
+		</property> 
+	</bean>
+
+	<bean id="sslHttpServerPipelineFactory"
+		class="com.yuecheng.hops.gateway.communication.netty.SSLSupportedPipelineFactory"
+		scope="prototype">
+		<property name="channelHandlerMap">
+			<map>
+				<entry key="httpRequestDecoder" value-ref="httpRequestDecoder"  />
+				<!-- Uncomment the following line if you don't want to handle HttpChunks. -->
+				<entry key="httpChunkAggregator" value-ref="httpChunkAggregator" />
+                <entry key="httpResponseEncoder" value-ref="httpResponseEncoder" />
+				<entry key="chunkedWriteHandler" value-ref="chunkedWriteHandler" />
+				<!--Remove the following line if you don't want automatic content compression. -->
+<!-- 				<entry key="httpContentCompressor" value-ref="httpContentCompressor" /> -->
+				<entry key="executionHandler" value-ref="executionHandler" />
+<!-- 				<entry key="deflater" value-ref="httpContentDecompressor" /> -->
+				<entry key="httpServerHandler" value-ref="httpServerHandler" />
+			</map>
+		</property>
+		<property name="sslEnable">
+			<value>false</value>
+		</property>
+		<property name="sslUserClientMode"><!-- 服务器端设置为false,客户端为true -->
+			<value>false</value>
+		</property>
+		<property name="needClientAuth"><!-- 是否需要认证客户端证书 -->
+			<value>false</value>
+		</property>
+		<property name="sslContextFactory" ref="sslContextFactory"></property>
+	</bean>
+
+	<bean id="sslContextFactory"
+		class="com.yuecheng.hops.gateway.security.ssl.SSLContextFactoryImpl"
+		init-method="init">
+		<property name="protocol">
+			<value>TLS</value>
+		</property>
+		<property name="keyStoreFile">
+			<value>/server.jks</value>
+		</property>
+		<property name="keyStorePassword">
+			<value>123456</value>
+		</property>
+	</bean>
+
+	<bean id="httpContentCompressor"
+		class="org.jboss.netty.handler.codec.http.HttpContentCompressor" scope="prototype"/>
+	<bean id="stringDecoder" class="org.jboss.netty.handler.codec.string.StringDecoder" scope="prototype"/>
+	<bean id="stringEncoder" class="org.jboss.netty.handler.codec.string.StringEncoder" scope="prototype"/>
+	<bean id="httpRequestDecoder" class="org.jboss.netty.handler.codec.http.HttpRequestDecoder" scope="prototype"/>	
+	<bean id="httpRequestEncoder" class="org.jboss.netty.handler.codec.http.HttpRequestEncoder" scope="prototype"/>
+	<bean id="httpResponseDecoder" class="org.jboss.netty.handler.codec.http.HttpResponseDecoder" scope="prototype"/>
+	<bean id="httpResponseEncoder" class="org.jboss.netty.handler.codec.http.HttpResponseEncoder" scope="prototype"/>
+	<bean id="httpClientCodec" class="org.jboss.netty.handler.codec.http.HttpClientCodec" scope="prototype"/>
+	<bean id="executionHandler" class="org.jboss.netty.handler.execution.ExecutionHandler" >
+	    	<constructor-arg ref="workThreadExecutor" />
+	</bean>
+	<bean id="httpContentDecompressor"
+		class="org.jboss.netty.handler.codec.http.HttpContentDecompressor" scope="prototype"/>
+	<bean id="httpChunkAggregator" class="org.jboss.netty.handler.codec.http.HttpChunkAggregator">
+		<constructor-arg>
+			<value>1048576</value>
+		</constructor-arg>
+	</bean>
+	<bean id="chunkedWriteHandler" class="org.jboss.netty.handler.stream.ChunkedWriteHandler" scope="prototype"/>
+	
+	<bean id="httpServerHandler"
+		class="com.yuecheng.hops.gateway.communication.netty.http.HttpServerHandler" scope="prototype"/>
+
+	<bean id="cacheUriMappingProcessor" class="com.yuecheng.hops.gateway.init.CacheUriMappingProcessor"
+		init-method="init"></bean>
+		
+	<bean id="workThreadExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<!-- 核心线程数，默认为1 -->
+		<property name="corePoolSize" value="100" />
+		<!-- 最大线程数，默认为Integer.MAX_VALUE -->
+		<property name="maxPoolSize" value="300" />
+		<property name="queueCapacity" value="1000" />
+		<!-- 线程池维护线程所允许的空闲时间，默认为60s -->
+<!-- 		<property name="keepAliveSeconds" value="6000" /> -->
+		<!-- 线程池对拒绝任务（无线程可用）的处理策略，目前只支持AbortPolicy、CallerRunsPolicy；默认为后者 -->
+		<property name="rejectedExecutionHandler">
+			<bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+		</property>
+	</bean>
+</beans>

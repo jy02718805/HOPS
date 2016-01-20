@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须指向Dao接口 -->
+<mapper namespace="com.yuecheng.hops.identity.repository.mybatis.MerchantMybatisDao">
+    <resultMap id="MerchantMap" type="com.yuecheng.hops.identity.entity.merchant.Merchant">
+		<id property="id" column="Identity_id"/>
+		<result property="merchantName" column="merchant_Name"/>
+		<result property="merchantType" column="TYPE"/>
+	</resultMap>
+    
+	<!-- 查询用户,演示: 1.输入用map传入多个参数 2.<where>语句, 智能添加where和and关键字 3.输出直接映射对象 -->
+	<select id="search" parameterType="map" resultMap="MerchantMap">
+		select * from Merchant mer
+		<where>
+			<if test="IDENTITY_ID != null">
+				mer.IDENTITY_ID=#{IDENTITY_ID}
+			</if>
+		</where>
+	</select>
+
+	<!-- 删除用户 -->
+	<delete id="delete" parameterType="long">
+	     delete from merchant where id=#{id}
+	</delete>
+	
+	<!-- 自增http://leeyee.github.io/blog/2013/08/22/mybatis-auto-increment-primary-key/ -->
+</mapper> 

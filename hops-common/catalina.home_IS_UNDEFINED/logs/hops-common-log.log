@@ -1,0 +1,12 @@
+2015-01-12 20:52:44,576 [Thread-8508] INFO  o.a.h.impl.client.DefaultHttpClient - I/O exception (org.apache.http.NoHttpResponseException) caught when processing request: The target server failed to respond
+2015-01-12 20:52:46,264 [Thread-8508] INFO  o.a.h.impl.client.DefaultHttpClient - Retrying request
+2015-05-20 16:19:27,052 [main] INFO  o.a.h.impl.client.DefaultHttpClient - I/O exception (org.apache.http.NoHttpResponseException) caught when processing request: The target server failed to respond
+2015-05-20 16:19:27,063 [main] INFO  o.a.h.impl.client.DefaultHttpClient - Retrying request
+2015-11-04 09:56:18,951 [main] INFO  o.a.h.impl.client.DefaultHttpClient - I/O exception (org.apache.http.NoHttpResponseException) caught when processing request: The target server failed to respond
+2015-11-04 09:56:18,992 [main] INFO  o.a.h.impl.client.DefaultHttpClient - Retrying request
+2015-11-18 19:44:34,445 [main] INFO  o.a.h.impl.client.DefaultHttpClient - I/O exception (org.apache.http.NoHttpResponseException) caught when processing request: The target server failed to respond
+2015-11-18 19:44:34,484 [main] INFO  o.a.h.impl.client.DefaultHttpClient - Retrying request
+2015-11-18 19:47:02,912 [main] INFO  o.a.h.impl.client.DefaultHttpClient - I/O exception (org.apache.http.NoHttpResponseException) caught when processing request: The target server failed to respond
+2015-11-18 19:47:02,919 [main] INFO  o.a.h.impl.client.DefaultHttpClient - Retrying request
+2015-11-26 14:44:28,292 [main] INFO  o.a.h.impl.client.DefaultHttpClient - I/O exception (org.apache.http.NoHttpResponseException) caught when processing request: The target server failed to respond
+2015-11-26 14:44:28,339 [main] INFO  o.a.h.impl.client.DefaultHttpClient - Retrying request

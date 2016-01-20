@@ -1,0 +1,60 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="ehcache.xsd">
+<!-- 	<cacheManagerPeerProviderFactory -->
+<!-- 		class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory" -->
+<!-- 		properties="peerDiscovery=manual,  -->
+<!--          rmiUrls=//localhost:40002/UserCache|//localhost:40003/UserCache" />  -->
+
+	<cacheManagerPeerProviderFactory
+	    class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+	    properties="peerDiscovery=automatic, multicastGroupAddress=230.0.0.1,
+	    	multicastGroupPort=4447, timeToLive=255, hostName=192.168.1.153"/>  
+
+	<cacheManagerPeerListenerFactory
+		class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+		properties="hostName=192.168.1.153,port=40001, socketTimeoutMillis=2000" />
+
+	<cache name="IdentityCache" maxElementsInMemory="10000" >
+		<cacheEventListenerFactory
+			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=true,
+                            replicatePutsViaCopy=true, replicateUpdates=true,
+                            replicateUpdatesViaCopy=true, replicateRemovals=true,
+                            asynchronousReplicationIntervalMillis=0" />
+		<bootstrapCacheLoaderFactory
+			class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
+	</cache>
+	
+	<cache name="SecurityCredential" maxElementsInMemory="10000" >
+		<cacheEventListenerFactory
+			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=true,
+                            replicatePutsViaCopy=true, replicateUpdates=true,
+                            replicateUpdatesViaCopy=true, replicateRemovals=true,
+                            asynchronousReplicationIntervalMillis=0" />
+		<bootstrapCacheLoaderFactory
+			class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
+	</cache>
+	
+	<cache name="SecurityCredentialType" maxElementsInMemory="10000" >
+		<cacheEventListenerFactory
+			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=true,
+                            replicatePutsViaCopy=true, replicateUpdates=true,
+                            replicateUpdatesViaCopy=true, replicateRemovals=true,
+                            asynchronousReplicationIntervalMillis=0" />
+		<bootstrapCacheLoaderFactory
+			class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
+	</cache>
+	
+	<cache name="SecurityCredentialRule" maxElementsInMemory="10000" >
+		<cacheEventListenerFactory
+			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=true,
+                            replicatePutsViaCopy=true, replicateUpdates=true,
+                            replicateUpdatesViaCopy=true, replicateRemovals=true,
+                            asynchronousReplicationIntervalMillis=0" />
+		<bootstrapCacheLoaderFactory
+			class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
+	</cache>
+</ehcache>

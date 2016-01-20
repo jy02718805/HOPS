@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%date{ISO8601} [%thread] %-5level %logger{36} - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+
+	 <appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${catalina.home}/logs/hops-mportal-log.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${catalina.home}/logs/hops-mportal-log.%i.log</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>30</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+		<maxFileSize>100MB</maxFileSize>
+	</triggeringPolicy>
+	<encoder>
+		<pattern>%date{ISO8601} [%thread] %-5level %logger{36} - %msg%n
+		</pattern>
+	</encoder>
+  </appender>
+	<root level="INFO">
+		<!--<appender-ref ref="console" />-->
+		<appender-ref ref="rollingFile" />
+	</root>
+</configuration>
